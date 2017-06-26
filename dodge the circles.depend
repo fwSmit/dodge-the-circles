@@ -1,9 +1,10 @@
 # depslib dependency file v1.0
-1497475804 source:f:\fwsmi\github repositories\dodge-the-circles\source.cpp
+1498507532 source:f:\fwsmi\github repositories\dodge-the-circles\source.cpp
 	<assert.h>
 	<SFML/Graphics.hpp>
 	<SFML\System.hpp>
 	<SFML\Main.hpp>
+	<SFML/Config.hpp>
 	<iostream>
 	<numeric>
 	<iomanip>

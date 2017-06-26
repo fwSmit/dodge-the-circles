@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML\System.hpp>
 #include <SFML\Main.hpp>
+#include <SFML/Config.hpp>
 #include <iostream>
 #include <numeric>
 #include <iomanip>
@@ -17,7 +18,7 @@
 
 
 class myCircle;
-float CharacterRadius = 60;
+float CharacterRadius = 30;
 int highScore = 0;
 int lastSecond = 0;
 int currentScore = 0;
@@ -25,10 +26,12 @@ float maxSpeed = 10;
 const size_t number_start_enemies = 6;
 bool gameOver = 0;
 unsigned int enemySpawnTime = 10;
+sf::Clock timer;
 // makes all circles go down when the player is dead
 float fallingVelocity = 0;
 std::vector<myCircle> enemies;
-sf::RenderWindow window(sf::VideoMode(1000, 800), "SFML works!", sf::Style::Fullscreen);
+sf::ContextSettings settings;
+sf::RenderWindow window(sf::VideoMode(1000, 800), "SFML works!");
 
 sf::Clock surviveTimer;
 float startingRestTime = 0.5;
@@ -120,7 +123,8 @@ public:
     }
     void myMove(arma::fvec2 velocity)
     {
-        move(velocity[0], velocity[1]);
+        //std::cout << velocity[0] * timer.getElapsedTime().asMilliseconds() * 0.06 << std::endl;
+        move(velocity[0] * timer.getElapsedTime().asMilliseconds() * 0.06, velocity[1] * timer.getElapsedTime().asMilliseconds() * 0.06);
     }
 
     void clampInScreen()
@@ -241,7 +245,6 @@ void debugInit()
 
 int main()
 {
-    //std::cout << surviveTime.asMicroseconds();
     sf::Font font;
     font.loadFromFile("arial/arial.ttf");
     sf::Text test(sf::String("asdfjk"), font);
@@ -251,8 +254,8 @@ int main()
     // alpha 120
     resetGame();
     window.setMouseCursorVisible(0);
-    window.setVerticalSyncEnabled(1);
-    window.setFramerateLimit(60);
+    //window.setVerticalSyncEnabled(1);
+    window.setFramerateLimit(30);
     while (window.isOpen()) {
         if (std::round(surviveTimer.getElapsedTime().asSeconds()) > lastSecond) {
             lastSecond = std::round(surviveTimer.getElapsedTime().asSeconds());
@@ -360,10 +363,10 @@ int main()
         if(!gameOver){
             currentScore = lastSecond;
         }
-        ss << "score: " << currentScore << std::endl << "highscore: " << highScore;
+        ss << "score: " << currentScore << std::endl << "highscore: " << highScore << std::endl << "fps: " << 1/timer.getElapsedTime().asSeconds();
 
         if(currentScore == highScore){
-            ss  "new record" ;
+            ss << "new record" << std::endl;
         }
         if(gameOver) {
             const float fallingAcceleration = 0.2;
@@ -397,8 +400,10 @@ int main()
 
 
         //Player.update();
+        //std::cout << timer.getElapsedTime().asSeconds()<< std::endl;
+        timer.restart();
         window.display();
-
+        //std::cout << timer.restart().asMilliseconds() << std::endl;
     }
 
     return 0;

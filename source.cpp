@@ -246,7 +246,7 @@ void debugInit()
 int main()
 {
     sf::Font font;
-    font.loadFromFile("arial/arial.ttf");
+    font.loadFromFile("../../arial/arial.ttf");
     sf::Text test(sf::String("asdfjk"), font);
     arma::arma_rng::set_seed_random();
     Player.setFillColor(sf::Color::Green);

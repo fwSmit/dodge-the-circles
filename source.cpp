@@ -3,187 +3,46 @@
 #define convertToString(x) #x
 
 #include <SFML/Graphics.hpp>
-#include <SFML\System.hpp>
-#include <SFML\Main.hpp>
+#include <SFML/System.hpp>
+//#include <SFML/Main.hpp>
 #include <SFML/Config.hpp>
 #include <iostream>
 #include <numeric>
 #include <iomanip>
+#include "PhysicsCircle.h"
 
-#define ARMA_DONT_USE_BLAS
-#include <armadillo>
+#include "functions.h"
 #include <string>
 #include <algorithm>
 
-
-
-class myCircle;
-float CharacterRadius = 30;
 int highScore = 0;
 int lastSecond = 0;
 int currentScore = 0;
-float maxSpeed = 10;
 const size_t number_start_enemies = 6;
-bool gameOver = 0;
 unsigned int enemySpawnTime = 10;
 sf::Clock timer;
 // makes all circles go down when the player is dead
 float fallingVelocity = 0;
-std::vector<myCircle> enemies;
+std::vector<PhysicsCircle> enemies;
 sf::ContextSettings settings;
+
 sf::RenderWindow window(sf::VideoMode(1000, 800), "SFML works!");
+functions func(window);
 
 sf::Clock surviveTimer;
 float startingRestTime = 0.5;
 
-float clamp(float value, float min, float max)
-{
-    return value < min ? min : value> max ? max : value;
-}
 
-float distance(arma::fvec2 a, arma::fvec2 b)
-{
-    return arma::norm(a - b);
-}
-class myCircle : public sf::CircleShape
-{
-
-    float mass = 1;
-    sf::Clock lifeTime;
-    bool oldEnough = 0;
-public:
-
-    myCircle()
-    {
-        reset();
-        setRad(CharacterRadius);
-        setOriginCenter();
-        lifeTime.restart();
-    }
-
-    float getLifeTime()const
-    {
-        return lifeTime.getElapsedTime().asSeconds();
-    }
-
-    void setPos(arma::fvec2& position)
-    {
-        //std::cout << "setting arma pos" << std::endl;
-        //std::cout << position << std::endl;
-        setPosition(position[0], position[1]);
-    }
-
-    bool getOldEnough() const
-    {
-        return oldEnough;
-    }
-
-    arma::fvec2 getPos()
-    {
-        return arma::fvec2{ getPosition().x, getPosition().y };
-    }
-
-    bool getHit(myCircle& other)
-    {
-        if (&other != this) {
-            return distance(other.getPos(), getPos()) <= getRadius() + other.getRadius();
-        } else {
-            //std::cout << "testing yourself" << std::endl;
-        }
-        return 0;
-    }
-
-    void update()
-    {
-        if (oldEnough) {
-            auto position = getPosition();
-            if (position.x + getRadius() > window.getSize().x || position.x - getRadius() < 0) {
-                vel[0] = -vel[0];
-                if(!gameOver) clampInScreen();
-                //std::cout << "x out of bounds" << std::endl;
-            }
-            if (position.y + getRadius() > window.getSize().y || position.y - getRadius() < 0) {
-                vel[1] = -vel[1];
-                if(!gameOver) clampInScreen();
-                //std::cout << "y out of bounds" << std::endl;
-            }
-            myMove(vel);
-        } else {
-            if (getLifeTime() > startingRestTime) {
-                bool hit = 0;
-                for (auto& i : enemies) {
-                    if (getHit(i)) {
-                        hit = true;
-                        break;
-                    }
-                }
-                oldEnough = !hit;
-            }
-        }
-    }
-    void myMove(arma::fvec2 velocity)
-    {
-        //std::cout << velocity[0] * timer.getElapsedTime().asMilliseconds() * 0.06 << std::endl;
-        move(velocity[0] * timer.getElapsedTime().asMilliseconds() * 0.06, velocity[1] * timer.getElapsedTime().asMilliseconds() * 0.06);
-    }
-
-    void clampInScreen()
-    {
-        float value_x = clamp(getPosition().x, getRadius(), window.getSize().x - getRadius());
-        float value_y = clamp(getPosition().y, getRadius(), window.getSize().y - getRadius());
-        setPosition(value_x, value_y);
-    }
-
-    void setRad(float radius)
-    {
-        setRadius(radius);
-        mass = arma::datum::pi * pow(radius, 2);
-        setOriginCenter();
-    }
-
-    void setOriginCenter()
-    {
-        setOrigin(getRadius(), getRadius());
-    }
-
-    void reset()
-    {
-        float rotation = arma::randu()*arma::fdatum::pi * 2;
-        float speed = maxSpeed;//(arma::randu()+0.5*maxSpeed);
-        //std::cout << "rotation " << rotation/ (arma::fdatum::pi * 2) * 360 << std::endl;
-        //std::cout << "speed " << speed << std::endl;
-        vel[0] = cos(rotation)*speed;
-        vel[1] = sin(rotation)*speed;
-    }
-
-    float getMass() const
-    {
-        return mass;
-    }
-
-    arma::fvec2 vel;
-};
-
-
-
-
-arma::fvec2 getParalel(arma::fvec2 start, arma::fvec2 paralelTo)
-{
-    arma::fvec2 paralel = paralelTo * (arma::dot(paralelTo, start) / (pow(arma::norm(paralelTo), 2)));
-    //arma::fvec2 perpendicular_i = start - paralel_i;
-    return paralel;
-}
-
-void initialize(myCircle& enemy)
+void initialize(PhysicsCircle& enemy)
 {
     enemy.setFillColor(sf::Color::Red);
     enemy.setRad(CharacterRadius/*arma::randu() * 40 + 20*/);
-    //printf("size x %d, y %d", window.getSize().x, window.getSize().y);
+    //printf("size x %d, y %d", func.getWindowSize().x, func.getWindowSize().y);
     //std::cout << position << std::endl;
 
     arma::fvec2 position(arma::fill::randu);
-    position[0] *= window.getSize().x - 2 * enemy.getRadius();
-    position[1] *= window.getSize().y - 2 * enemy.getRadius();
+    position[0] *= func.getWindowSize().x - 2 * enemy.getRadius();
+    position[1] *= func.getWindowSize().y - 2 * enemy.getRadius();
     position += enemy.getRadius();
     enemy.setPos(position);
 
@@ -205,7 +64,7 @@ void initialize(myCircle& enemy)
 }
 
 // player character
-myCircle Player;
+PhysicsCircle Player(func);
 
 void resetGame()
 {
@@ -213,7 +72,7 @@ void resetGame()
     enemies.resize(number_start_enemies);
     for (int i = 0; i < number_start_enemies; i++) {
         bool AreColliding;
-        myCircle temp;
+        PhysicsCircle temp(func);
         do {
             initialize(temp);
             AreColliding = 0;
@@ -246,7 +105,7 @@ void debugInit()
 int main()
 {
     sf::Font font;
-    font.loadFromFile("../../arial/arial.ttf");
+    font.loadFromFile("../fonts/Ubuntu-M.ttf");
     sf::Text test(sf::String("asdfjk"), font);
     arma::arma_rng::set_seed_random();
     Player.setFillColor(sf::Color::Green);
@@ -262,7 +121,7 @@ int main()
             //system("cls");
             //std::cout << lastSecond << std::endl;
             if (int(std::round(surviveTimer.getElapsedTime().asSeconds())) % enemySpawnTime == 0) {
-                myCircle newEnemy;
+                PhysicsCircle newEnemy(func);
                 initialize(newEnemy);
                 enemies.push_back(newEnemy);
             }
@@ -276,14 +135,14 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             if (event.type == sf::Event::MouseMoved) {
-                if(!gameOver) {
+                if(!func.isGameOver()) {
                     Player.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
                     Player.clampInScreen();
                 }
             }
             if (event.type == sf::Event::MouseButtonReleased) {
                 if (event.mouseButton.button == sf::Mouse::Button::Left) {
-                    gameOver = 0;
+                    func.setGameOver(0);
                     fallingVelocity = 0;
                     resetGame();
                     lastSecond = 0;
@@ -291,24 +150,24 @@ int main()
                     //debugInit();
                 }
                 /*if (event.mouseButton.button == sf::Mouse::Button::Right) {
-                	gameOver = false;
+                	func.setGameOver(false);
                 	//std::cout << sf::Mouse::getPosition(window).x << std::endl << sf::Mouse::getPosition(window).y << std::endl << Player.getPos() << std::endl;
                 }*/
             }
         }
         //score.setString(std::to_string(surviveTime.asSeconds()));
-        window.clear(gameOver?sf::Color(100, 10, 10, 100):sf::Color());
+        window.clear(func.isGameOver()?sf::Color(100, 10, 10, 100):sf::Color());
         window.draw(Player);
         for (auto& i : enemies) {
             Player.setFillColor(sf::Color(Player.getFillColor().r, Player.getFillColor().g, Player.getFillColor().b, 255));
             if (i.getLifeTime() > startingRestTime) {
                 if (Player.getGlobalBounds().intersects(i.getGlobalBounds())) {
                     if (i.getHit(Player)) {
-                        gameOver = true;
+                        func.setGameOver(true);
                     }
                 }
             }
-            i.update();
+            i.update(enemies);
             window.draw(i);
             //i.setFillColor(sf::Color::Red);
         }
@@ -326,8 +185,8 @@ int main()
                             arma::fvec2 deltaPos_i = enemies[i].getPos() - enemies[j].getPos();
                             arma::fvec2 deltaPos_j = enemies[j].getPos() - enemies[i].getPos();
                             //std::cout << deltaPos_i << std::endl << deltaPos_j << std::endl;
-                            arma::fvec2 paralel_i = getParalel(enemies[i].vel, deltaPos_i);
-                            arma::fvec2 paralel_j = getParalel(enemies[j].vel, deltaPos_j);
+                            arma::fvec2 paralel_i = func.getParalel(enemies[i].vel, deltaPos_i);
+                            arma::fvec2 paralel_j = func.getParalel(enemies[j].vel, deltaPos_j);
                             //std::cout << paralel_i << std::endl;
                             arma::fvec2 perpendicular_i = enemies[i].vel - paralel_i;
                             arma::fvec2 perpendicular_j = enemies[j].vel - paralel_j;
@@ -344,6 +203,8 @@ int main()
 
                             enemies[i].vel = newVel_i;
                             enemies[j].vel = newVel_j;
+							enemies[i].moveWithCurrentVel();
+							enemies[j].moveWithCurrentVel();
                         }
                     }
                     if (enemies[i].getHit(enemies[j])) {
@@ -357,10 +218,10 @@ int main()
 
         // using stringstream, because std::to_string doesn't compile
         std::stringstream ss;
-        if(highScore < lastSecond && !gameOver) {
+        if(highScore < lastSecond && !func.isGameOver()) {
             highScore = lastSecond;
         }
-        if(!gameOver){
+        if(!func.isGameOver()){
             currentScore = lastSecond;
         }
         ss << "score: " << currentScore << std::endl << "highscore: " << highScore << std::endl;// << "fps: " << 1/timer.getElapsedTime().asSeconds();
@@ -368,7 +229,7 @@ int main()
         if(currentScore == highScore){
             ss << "new record" << std::endl;
         }
-        if(gameOver) {
+        if(func.isGameOver()) {
             const float fallingAcceleration = 0.2;
             Player.setPosition(Player.getPosition().x, Player.getPosition().y + fallingVelocity);
 
@@ -383,12 +244,14 @@ int main()
 
         }
 
-        if(gameOver) {
+        if(func.isGameOver()) {
             std::string str = "click to restart";
             sf::Text clickToRestart(str, font, 100);
             // this moves the text to the center
-            clickToRestart.setPosition(sf::Vector2f(window.getSize())/2.f );
-            clickToRestart.move(-0.25 * str.size() * clickToRestart.getCharacterSize(), -0.5 * clickToRestart.getCharacterSize());
+            clickToRestart.setPosition(sf::Vector2f(func.getWindowSize())/2.f );
+			sf::FloatRect textRect = clickToRestart.getLocalBounds();
+			clickToRestart.setOrigin(textRect.left + textRect.width/2.0f, textRect.top  + textRect.height/2.0f);
+            //clickToRestart.move(-0.25 * str.size() * clickToRestart.getCharacterSize(), -0.5 * clickToRestart.getCharacterSize());
             window.draw(clickToRestart);
         }
         window.draw(sf::Text(sf::String(ss.str()), font));
@@ -403,6 +266,7 @@ int main()
         //std::cout << timer.getElapsedTime().asSeconds()<< std::endl;
         timer.restart();
         window.display();
+		func.update();
         //std::cout << timer.restart().asMilliseconds() << std::endl;
     }
 

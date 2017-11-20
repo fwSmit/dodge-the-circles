@@ -1,7 +1,7 @@
 #include "PhysicsCircle.h"
 
 
-PhysicsCircle::PhysicsCircle(functions& _func) : func(_func)
+PhysicsCircle::PhysicsCircle(functions& _func) : func(&_func)
     {
         reset();
         setRad(CharacterRadius);
@@ -12,7 +12,7 @@ PhysicsCircle::PhysicsCircle(functions& _func) : func(_func)
     bool PhysicsCircle::getHit(PhysicsCircle& other)
     {
         if (&other != this) {
-            return func.get().distance(other.getPos(), getPos()) <= getRadius() + other.getRadius();
+            return func->distance(other.getPos(), getPos()) <= getRadius() + other.getRadius();
         } else {
             //std::cout << "testing yourself" << std::endl;
         }
@@ -23,19 +23,19 @@ PhysicsCircle::PhysicsCircle(functions& _func) : func(_func)
     {
         if (oldEnough) {
             auto position = getPosition();
-            if (position.x + getRadius() > func.get().getWindowSize().x || position.x - getRadius() < 0) {
+            if (position.x + getRadius() > func->getWindowSize().x || position.x - getRadius() < 0) {
                 vel[0] = -vel[0];
-                if(!func.get().isGameOver()) clampInScreen();
+                if(!func->isGameOver()) clampInScreen();
                 //std::cout << "x out of bounds" << std::endl;
             }
-            if (position.y + getRadius() > func.get().getWindowSize().y || position.y - getRadius() < 0) {
+            if (position.y + getRadius() > func->getWindowSize().y || position.y - getRadius() < 0) {
                 vel[1] = -vel[1];
-                if(!func.get().isGameOver()) clampInScreen();
+                if(!func->isGameOver()) clampInScreen();
                 //std::cout << "y out of bounds" << std::endl;
             }
 			moveWithCurrentVel();
         } else {
-            if (getLifeTime() > startingRestTime) {
+            if (getLifeTime() > func->getStartingRestTime()) {
                 bool hit = 0;
                 for (auto& i : enemies) {
                     if (getHit(i)) {

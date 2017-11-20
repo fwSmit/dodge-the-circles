@@ -11,6 +11,7 @@ class functions{
 	std::reference_wrapper<sf::RenderWindow> window;
 	sf::Clock timer;
 	bool gameOver = 0;
+	float startingRestTime = 0.5;
 
 public:
 	functions(sf::RenderWindow& _window);
@@ -18,6 +19,9 @@ public:
 	float distance(arma::fvec2 a, arma::fvec2 b);
 	bool isGameOver(){ return gameOver; }
 	void setGameOver(bool value) { gameOver = value; } 
+	
+	float getStartingRestTime(){ return startingRestTime; } 
+	void setStartingRestTime(float time) { startingRestTime = time; } 
 
 
 	sf::Vector2u getWindowSize(){

@@ -10,10 +10,10 @@ class PhysicsCircle : public sf::CircleShape
 	float maxSpeed = 10;
 	float CharacterRadius = 30;
 public:
-	std::reference_wrapper<functions> func;
+	functions* func;
 	//sf::Clock& timer;
 	
-	//PhysicsCircle(){}
+	PhysicsCircle(){}
 	
     PhysicsCircle(functions& _func);
 
@@ -47,13 +47,13 @@ public:
 
 		//velocity gets higher over time
         //move(velocity[0] * timer.getElapsedTime().asMilliseconds() * 0.06, velocity[1] * timer.getElapsedTime().asMilliseconds() * 0.06);
-		move(velocity[0] * func.get().getElapsedTime() * 0.06, velocity[1] * func.get().getElapsedTime() * 0.06);
+		move(velocity[0] * func->getElapsedTime() * 0.06, velocity[1] * func->getElapsedTime() * 0.06);
     }
 
     void clampInScreen()
     {
-        float value_x = func.get().clamp(getPosition().x, getRadius(), func.get().getWindowSize().x - getRadius());
-        float value_y = func.get().clamp(getPosition().y, getRadius(), func.get().getWindowSize().y - getRadius());
+        float value_x = func->clamp(getPosition().x, getRadius(), func->getWindowSize().x - getRadius());
+        float value_y = func->clamp(getPosition().y, getRadius(), func->getWindowSize().y - getRadius());
         setPosition(value_x, value_y);
     }
 

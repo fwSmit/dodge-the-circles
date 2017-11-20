@@ -5,7 +5,7 @@ project (dodge)
 
 set (CMAKE_CXX_STANDARD 11)
 
-set (dodge_SRC source.cpp functions.cpp PhysicsCircle.cpp)
+set (dodge_SRC source.cpp functions.cpp PhysicsCircle.cpp ProjectDodge.cpp Project.cpp)
 
 option(IS_LIBRARY "Should dodge be compiled as library?")
 

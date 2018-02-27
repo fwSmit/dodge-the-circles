@@ -25,22 +25,22 @@ endif()
 
 
 #armadillo library
-find_package(Armadillo REQUIRED)
-include_directories(${ARMADILLO_INCLUDE_DIR})
+#find_package(Armadillo REQUIRED)
+#include_directories(${ARMADILLO_INCLUDE_DIR})
 
 
 #include the necessary libraries
 find_package(SFML 2 REQUIRED system window graphics network audio)
-find_package(TGUI 0.7 REQUIRED)
+#find_package(TGUI 0.7 REQUIRED)
 
-if(NOT SFML_FOUND)
-    message(FATAL_ERROR "Could not find SFML")
-endif()
+#if(NOT SFML_FOUND)
+	#message(FATAL_ERROR "Could not find SFML")
+#endif()
+#
+#if(NOT TGUI_FOUND)
+#    message(FATAL_ERROR "Could not find TGUI")
+#endif()
 
-if(NOT TGUI_FOUND)
-    message(FATAL_ERROR "Could not find TGUI")
-endif()
+#include_directories(${SFML_INCLUDE_DIR})
 
-include_directories(${SFML_INCLUDE_DIR})
-
-target_link_libraries(dodge ${SFML_LIBRARIES} ${TGUI_LIBRARY} ${ARMADILLO_LIBRARIES})
+#target_link_libraries(dodge ${SFML_LIBRARIES} ${TGUI_LIBRARY})# ${ARMADILLO_LIBRARIES})

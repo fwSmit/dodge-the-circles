@@ -10,16 +10,16 @@ set (dodge_SRC source.cpp functions.cpp PhysicsCircle.cpp ProjectDodge.cpp Proje
 option(IS_LIBRARY "Should dodge be compiled as library?")
 
 if(IS_LIBRARY)
-#when used as library
-message("setting dodge up as library")
-include_directories(${CMAKE_SOURCE_DIR}/dependencies/include)
-include_directories(${CMAKE_SOURCE_DIR}/projects/dodge-the-circles)
-add_library(dodge SHARED ${dodge_SRC})
+	#when used as library
+	message("setting dodge up as library")
+	include_directories(${CMAKE_SOURCE_DIR}/dependencies/include)
+	include_directories(${CMAKE_SOURCE_DIR}/projects/dodge-the-circles)
+	add_library(dodge SHARED ${dodge_SRC})
 else()
-#when used as standalone executable
-message("setting dodge up as executable")
-include_directories(${CMAKE_SOURCE_DIR})
-add_executable(dodge ${dodge_SRC})
+	#when used as standalone executable
+	message("setting dodge up as executable")
+	include_directories(${CMAKE_SOURCE_DIR})
+	add_executable(dodge ${dodge_SRC})
 endif()
 
 

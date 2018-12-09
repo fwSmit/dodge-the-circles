@@ -23,9 +23,7 @@ void ProjectDodge::loop()
             //system("cls");
             //std::cout << lastSecond << std::endl;
             if (int(std::round(surviveTimer.getElapsedTime().asSeconds())) % enemySpawnTime == 0) {
-                PhysicsCircle newEnemy(func);
-                //initializeEnemy(newEnemy);
-                //enemies.push_back(newEnemy);
+				// spawn new enemy
             }
         }
 

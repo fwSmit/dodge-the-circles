@@ -2,18 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
-//#include <SFML/Main.hpp>
 #include <SFML/Config.hpp>
-//#include "Physics.h"
 #include "ProjectDodge.h"
-//#include <iostream>
-//#include <numeric>
-//#include <iomanip>
-//#include "PhysicsCircle.h"
-
-//#include "functions.h"
-//#include <string>
-//#include <algorithm>
 
 
 
@@ -38,26 +28,10 @@ int main()
 	float deltaTime;
     while (window.isOpen()) {
 		deltaTime = timer.restart().asSeconds();
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-		}
-
-		window.clear();
-		//physics.update(deltaTime);
-		//physics.draw(deltaTime);
-        // player died
-        // this makes it fall
-
 
 		dodge.loop();
 
-        //Player.update();
-        //std::cout << timer.getElapsedTime().asSeconds()<< std::endl;
         window.display();
-        //std::cout << timer.restart().asMilliseconds() << std::endl;
     }
 
     return 0;

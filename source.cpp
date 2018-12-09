@@ -4,8 +4,8 @@
 #include <SFML/System.hpp>
 //#include <SFML/Main.hpp>
 #include <SFML/Config.hpp>
-#include "Physics.h"
-//#include "ProjectDodge.h"
+//#include "Physics.h"
+#include "ProjectDodge.h"
 //#include <iostream>
 //#include <numeric>
 //#include <iomanip>
@@ -28,12 +28,12 @@ int main()
 {
 	sf::ContextSettings settings;
 	sf::RenderWindow window(sf::VideoMode(1000, 800), "SFML works!");
-	Physics physics(window);
+	//Physics physics(window);
     window.setMouseCursorVisible(0);
     window.setVerticalSyncEnabled(1);
-	//ProjectDodge dodge(window);
+	ProjectDodge dodge(window);
     //window.setFramerateLimit(10);
-	physics.addObject(arma::fvec2{50, 320}, arma::fvec2{-500, 0});
+	//physics.addObject(arma::fvec2{50, 320}, arma::fvec2{-500, 0});
 	sf::Clock timer;
 	float deltaTime;
     while (window.isOpen()) {
@@ -46,13 +46,13 @@ int main()
 		}
 
 		window.clear();
-		physics.update(deltaTime);
-		physics.draw(deltaTime);
+		//physics.update(deltaTime);
+		//physics.draw(deltaTime);
         // player died
         // this makes it fall
 
 
-		//dodge.loop();
+		dodge.loop();
 
         //Player.update();
         //std::cout << timer.getElapsedTime().asSeconds()<< std::endl;

@@ -7,6 +7,7 @@
 #include <SFML/Graphics.hpp>
 #include "functions.h"
 #include "PhysicsCircle.h"
+#include "Physics.h"
 
 class CollisionHandler;
 
@@ -21,6 +22,8 @@ class ProjectDodge : Project
 	protected:
 
 	private:
+		sf::Clock timer;
+		float deltaTime;
 		Physics physics;
 		sf::Font font;
 		PhysicsCircle Player;
@@ -31,13 +34,10 @@ class ProjectDodge : Project
 		int currentScore = 0;
 		const size_t number_start_enemies = 6;
 		unsigned int enemySpawnTime = 10;
-		sf::Clock timer;
 		// makes all circles go down when the player is dead
 		float fallingVelocity = 0;
-		std::vector<PhysicsCircle> enemies;
+		//std::vector<PhysicsCircle> enemies;
 
-		void initializeEnemy(PhysicsCircle& enemy);
-		void debugInit();
 };
 
 #endif // PROJECT_DODGE_H

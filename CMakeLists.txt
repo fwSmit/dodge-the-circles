@@ -45,4 +45,4 @@ endif()
 
 include_directories(${SFML_INCLUDE_DIR})
 
-target_link_libraries(dodge ${SFML_LIBRARIES} ${TGUI_LIBRARY} ${ARMADILLO_LIBRARIES} ${col_lib})
+target_link_libraries(dodge ${SFML_LIBRARIES} ${TGUI_LIBRARY} ${col_lib} ${ARMADILLO_LIBRARIES})

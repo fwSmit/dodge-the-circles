@@ -3,9 +3,11 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 project (dodge)
 
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 14)
 
 set (dodge_SRC source.cpp functions.cpp PhysicsCircle.cpp ProjectDodge.cpp Project.cpp)
+
+set(col_lib ${CMAKE_SOURCE_DIR}/lib/libcollision.so)
 
 option(IS_LIBRARY "Should dodge be compiled as library?")
 
@@ -25,22 +27,22 @@ endif()
 
 
 #armadillo library
-#find_package(Armadillo REQUIRED)
-#include_directories(${ARMADILLO_INCLUDE_DIR})
+find_package(Armadillo REQUIRED)
+include_directories(${ARMADILLO_INCLUDE_DIR})
 
 
 #include the necessary libraries
 find_package(SFML 2 REQUIRED system window graphics network audio)
-#find_package(TGUI 0.7 REQUIRED)
+find_package(TGUI REQUIRED)
 
-#if(NOT SFML_FOUND)
-	#message(FATAL_ERROR "Could not find SFML")
-#endif()
-#
-#if(NOT TGUI_FOUND)
-#    message(FATAL_ERROR "Could not find TGUI")
-#endif()
+if(NOT SFML_FOUND)
+	message(FATAL_ERROR "Could not find SFML")
+endif()
 
-#include_directories(${SFML_INCLUDE_DIR})
+if(NOT TGUI_FOUND)
+	message(FATAL_ERROR "Could not find TGUI")
+endif()
 
-#target_link_libraries(dodge ${SFML_LIBRARIES} ${TGUI_LIBRARY})# ${ARMADILLO_LIBRARIES})
+include_directories(${SFML_INCLUDE_DIR})
+
+target_link_libraries(dodge ${SFML_LIBRARIES} ${TGUI_LIBRARY} ${ARMADILLO_LIBRARIES})

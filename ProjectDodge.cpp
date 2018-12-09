@@ -1,6 +1,6 @@
 #include "ProjectDodge.h"
 
-ProjectDodge::ProjectDodge(sf::RenderWindow& _window) : Project(_window), func(_window), Player(func)
+ProjectDodge::ProjectDodge(sf::RenderWindow& _window) : Project(_window), func(_window), Player(func), physics(window)
 {
     font.loadFromFile("../fonts/Ubuntu-M.ttf");
     arma::arma_rng::set_seed_random();
@@ -170,7 +170,7 @@ void ProjectDodge::resetGame()
     enemies.resize(number_start_enemies);
     for (int i = 0; i < number_start_enemies; i++) {
         bool AreColliding;
-        PhysicsCircle temp(func);
+		Circle c;
         do {
             initializeEnemy(temp);
             AreColliding = 0;

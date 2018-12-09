@@ -21,6 +21,7 @@ class ProjectDodge : Project
 	protected:
 
 	private:
+		Physics physics;
 		sf::Font font;
 		PhysicsCircle Player;
 		sf::Clock surviveTimer;

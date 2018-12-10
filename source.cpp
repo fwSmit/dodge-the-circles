@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <iostream>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
@@ -7,9 +8,16 @@
 #include "Physics.h"
 //#include "ProjectDodge.h"
 
+using namespace std;
+
+void resetGame(Physics& physics, tgui::Button::Ptr startButton, sf::Clock gameTimer);
+void addCircle(Physics& physics);
+
 int main()
 {
 	bool started = false;
+	sf::Clock gameTime;
+	float lastAddedTime = 0;
 	sf::ContextSettings settings;
 	sf::RenderWindow window(sf::VideoMode(1000, 800), "SFML works!");
 	tgui::Gui gui(window);
@@ -18,7 +26,7 @@ int main()
 	Physics physics(window);
 	//ProjectDodge dodge(window);
     //window.setFramerateLimit(10);
-	physics.addObject(arma::fvec2{50, 320}, arma::fvec2{-500, 0});
+	//physics.addObject(arma::fvec2{50, 320}, arma::fvec2{-500, 0});
 	sf::Font font;
     font.loadFromFile("../fonts/Ubuntu-M.ttf");
     arma::arma_rng::set_seed_random();
@@ -35,7 +43,8 @@ int main()
 	
 	auto startButton = tgui::Button::create();
 	startButton->setText("Start");
-	startButton->connect("pressed", resetGame());
+	startButton->connect("pressed", resetGame, std::ref(physics), std::ref(startButton), std::ref(gameTime));
+	startButton->connect("pressed", [&](){started = true;});
 	layout->add(startButton);
 
 	sf::Clock timer;
@@ -51,6 +60,10 @@ int main()
 
 		window.clear();
 		//dodge.loop();
+		if(started && gameTime.getElapsedTime().asSeconds() - lastAddedTime > 4){
+			addCircle(physics);
+			lastAddedTime = gameTime.getElapsedTime().asSeconds();
+		}
 		physics.update(deltaTime);
 		physics.draw(deltaTime);
 
@@ -61,6 +74,19 @@ int main()
     return 0;
 }
 
-void resetGame(){
-	
+void resetGame(Physics& physics, tgui::Button::Ptr startButton, sf::Clock gameTimer){
+	for(int i = 0; i < 3; i++){
+		addCircle(physics);
+	}
+	startButton->hideWithEffect(tgui::ShowAnimationType::Fade, sf::seconds(0.5));
+	gameTimer.restart();
+}
+
+void addCircle(Physics& physics){
+	float radius = 15, speed = 300;
+	arma::fvec2 bounds {500, 400};
+	arma::fvec2 smallBounds {bounds[0]-2*radius, bounds[1]-2*radius};
+		arma::fvec2 pos{static_cast<float>(arma::randu())*smallBounds[0] + radius, static_cast<float>(arma::randu())*smallBounds[1] + radius};
+		arma::fvec2 vel{static_cast<float>(arma::randu())*100 - 50, static_cast<float>(arma::randu()) * 100 - 50};
+		physics.addObject(pos,vel, radius);
 }

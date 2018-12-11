@@ -6,6 +6,7 @@
 #include <SFML/Config.hpp>
 #include <TGUI/TGUI.hpp>
 #include "Physics.h"
+#include "constants.h"
 //#include "ProjectDodge.h"
 
 using namespace std;
@@ -16,6 +17,7 @@ void addCircle(Physics& physics);
 int main()
 {
 	bool started = false;
+	bool ended = false;
 	sf::Clock gameTime;
 	float lastAddedTime = 0;
 	sf::ContextSettings settings;
@@ -66,6 +68,7 @@ int main()
 		}
 		physics.update(deltaTime);
 		physics.draw(deltaTime);
+
 
 		gui.draw();
         window.display();

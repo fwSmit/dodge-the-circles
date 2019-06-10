@@ -1,38 +1,27 @@
-cmake_minimum_required(VERSION 3.5.1 FATAL_ERROR)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set (CMAKE_CXX_STANDARD 14)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 set(col_lib ${CMAKE_SOURCE_DIR}/lib/libcollision.so)
-set (dodge_SRC source.cpp functions.cpp PhysicsCircle.cpp ProjectDodge.cpp Project.cpp)
+set (CMAKE_CXX_STANDARD 14)
+# assuming gcc
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
-project (dodge)
+project (dodge-the-circles_project CXX)
 
-option(IS_LIBRARY "Should dodge be compiled as library?")
+#file globing
+file(GLOB_RECURSE sources src/*.cpp src/*.h)
+file(GLOB_RECURSE data resources/*)
 
-if(IS_LIBRARY)
-	#when used as library
-	message("setting dodge up as library")
-	include_directories(${CMAKE_SOURCE_DIR}/dependencies/include)
-	include_directories(${CMAKE_SOURCE_DIR}/projects/dodge-the-circles)
-	add_library(dodge SHARED ${dodge_SRC})
-else()
-	#when used as standalone executable
-	message("setting dodge up as executable")
-	include_directories(${CMAKE_SOURCE_DIR})
-	include_directories(${CMAKE_SOURCE_DIR}/build)
-	include_directories(${CMAKE_SOURCE_DIR}/headers)
-	add_executable(dodge ${dodge_SRC})
-endif()
+add_executable(dodge-the-circles ${sources} ${data})
 
-
+#copy resources to build directory
+file(COPY ${data} DESTINATION resources)
 
 #armadillo library
 find_package(Armadillo REQUIRED)
-include_directories(${ARMADILLO_INCLUDE_DIR})
-
 
 #include the necessary libraries
-find_package(SFML 2 REQUIRED system window graphics network audio)
+find_package(SFML 2 REQUIRED system window graphics)
 find_package(TGUI REQUIRED)
 
 if(NOT SFML_FOUND)
@@ -43,6 +32,12 @@ if(NOT TGUI_FOUND)
 	message(FATAL_ERROR "Could not find TGUI")
 endif()
 
-include_directories(${SFML_INCLUDE_DIR})
+if(NOT ARMADILLO_FOUND)
+	message(FATAL_ERROR "Could not find armadillo")
+endif()
 
-target_link_libraries(dodge ${SFML_LIBRARIES} ${TGUI_LIBRARY} ${col_lib} ${ARMADILLO_LIBRARIES})
+include_directories(${SFML_INCLUDE_DIR})
+include_directories(${TGUI_INCLUDE_DIR})
+include_directories(${ARMADILLO_INCLUDE_DIRS})
+
+target_link_libraries(dodge-the-circles ${SFML_LIBRARIES} ${TGUI_LIBRARY} ${ARMADILLO_LIBRARIES} ${col_lib})

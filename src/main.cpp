@@ -7,11 +7,11 @@
 #include <TGUI/TGUI.hpp>
 #include "Physics.h"
 #include "constants.h"
-//#include "ProjectDodge.h"
+#include "Game.h"
 
 using namespace std;
 
-void resetGame(Physics& physics, tgui::Button::Ptr startButton, sf::Clock gameTimer);
+void startGame(Game game, Physics& physics, tgui::Button::Ptr startButton, sf::Clock gameTimer);
 void addCircle(Physics& physics);
 
 int main()
@@ -23,21 +23,15 @@ int main()
 	sf::ContextSettings settings;
 	sf::RenderWindow window(sf::VideoMode(1000, 800), "SFML works!");
 	tgui::Gui gui(window);
-    //window.setMouseCursorVisible(0);
+	// window.setMouseCursorVisible(0);
     window.setVerticalSyncEnabled(1);
 	Physics physics(window);
-	//ProjectDodge dodge(window);
-    //window.setFramerateLimit(10);
-	//physics.addObject(arma::fvec2{50, 320}, arma::fvec2{-500, 0});
 	sf::Font font;
     font.loadFromFile("../fonts/Ubuntu-M.ttf");
     arma::arma_rng::set_seed_random();
 
-	//tgui::Button::Ptr startButton = tgui::Button::create("Start");
-	//startButton->setSize("25%" , "15%");
-	//startButton->setPosition("50%" , "50%");
-	//gui.add(startButton);
-	
+	Game game(window);
+
 	auto layout = tgui::VerticalLayout::create();
 	layout->setSize("25%", "15%");
 	layout->setPosition(500 - 0.25*500, 100);
@@ -45,7 +39,7 @@ int main()
 	
 	auto startButton = tgui::Button::create();
 	startButton->setText("Start");
-	startButton->connect("pressed", resetGame, std::ref(physics), std::ref(startButton), std::ref(gameTime));
+	startButton->connect("pressed", startGame, std::ref(game), std::ref(physics), std::ref(startButton), std::ref(gameTime));
 	startButton->connect("pressed", [&](){started = true;});
 	layout->add(startButton);
 
@@ -61,7 +55,6 @@ int main()
 		}
 
 		window.clear();
-		//dodge.loop();
 		if(started && gameTime.getElapsedTime().asSeconds() - lastAddedTime > 4){
 			addCircle(physics);
 			lastAddedTime = gameTime.getElapsedTime().asSeconds();
@@ -77,16 +70,13 @@ int main()
     return 0;
 }
 
-void resetGame(Physics& physics, tgui::Button::Ptr startButton, sf::Clock gameTimer){
-	for(int i = 0; i < 3; i++){
-		addCircle(physics);
-	}
+void startGame(Game game, Physics& physics, tgui::Button::Ptr startButton, sf::Clock gameTimer){
 	startButton->hideWithEffect(tgui::ShowAnimationType::Fade, sf::seconds(0.5));
-	gameTimer.restart();
+	game.start();
 }
 
 void addCircle(Physics& physics){
-	float radius = 15, speed = 300;
+	float radius = 40, speed = 300;
 	arma::fvec2 bounds {500, 400};
 	arma::fvec2 smallBounds {bounds[0]-2*radius, bounds[1]-2*radius};
 		arma::fvec2 pos{static_cast<float>(arma::randu())*smallBounds[0] + radius, static_cast<float>(arma::randu())*smallBounds[1] + radius};

@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "constants.h"
 
 Game::Game(sf::RenderWindow& _window) : window(_window), func(_window), Player(func), physics(_window)
 {
@@ -18,6 +19,7 @@ void Game::loop()
             //std::cout << lastSecond << std::endl;
             if (int(std::round(surviveTimer.getElapsedTime().asSeconds())) % enemySpawnTime == 0) {
 				// spawn new enemy
+				addCircle();
             }
         }
 
@@ -105,23 +107,35 @@ void Game::resetGame()
 	std::vector<arma::fvec2> positions;
 	float radius = 10;
 	float radius_sq = radius*radius;
+	arma::fvec2 gameSize = op::toArma(func.getWindowSize());
     for (int i = 0; i < number_start_enemies; i++) {
-		arma::fvec2 pos;
-		bool intersects = true;
-		//while(intersects){
-			//pos = arma_rng::randu<arma::fvec2>();
-			//intersects = arma::accu(arma::pow(pos-i, 2)) < radius_sq;
-		//}
-		pos = arma::fvec2{50, 50};
-		positions.push_back(pos);
+		// arma::fvec2 pos;
+		// bool intersects = true;
+		// //while(intersects){
+			// //intersects = arma::accu(arma::pow(pos-i, 2)) < radius_sq;
+		// //}
+		// // pos = arma_rng::randu<arma::fvec2>();
+		// pos = {50, 50};
+
+		// positions.push_back(pos);
+		addCircle();
     }
-	for(auto& i : positions){
-		arma::fvec2 vel{static_cast<float>(arma::randu()), static_cast<float>(arma::randu())};
-		physics.addObject(i, 300 * vel);
-	}
+	// for(auto& i : positions){
+		// arma::fvec2 vel{static_cast<float>(arma::randu()), static_cast<float>(arma::randu())};
+		// physics.addObject(i, 300 * vel);
+	// }
 	//physics.addObject(arma::fvec2{100, 100}, arma::fvec2{100, 100});
 }
 
 void Game::start(){
 	resetGame();
+}
+
+void Game::addCircle(){
+	float radius = 40, speed = 300;
+	arma::fvec2 bounds {500, 400};
+	arma::fvec2 smallBounds {bounds[0]-2*radius, bounds[1]-2*radius};
+		arma::fvec2 pos{static_cast<float>(arma::randu())*smallBounds[0] + radius, static_cast<float>(arma::randu())*smallBounds[1] + radius};
+		arma::fvec2 vel{static_cast<float>(arma::randu())*100 - 50, static_cast<float>(arma::randu()) * 100 - 50};
+		physics.addObject(pos,vel, radius);
 }

@@ -12,6 +12,7 @@ class Game{
 	protected:
 
 	private:
+		void addCircle();
 		sf::RenderWindow& window;
 		sf::Clock timer;
 		float deltaTime;
@@ -24,7 +25,7 @@ class Game{
 		int lastSecond = 0;
 		int currentScore = 0;
 		const size_t number_start_enemies = 6;
-		unsigned int enemySpawnTime = 10;
+		unsigned int enemySpawnTime = 1;
 		// makes all circles go down when the player is dead
 		float fallingVelocity = 0;
 		//std::vector<PhysicsCircle> enemies;

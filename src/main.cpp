@@ -55,10 +55,10 @@ int main()
 		}
 
 		window.clear();
-		if(started && gameTime.getElapsedTime().asSeconds() - lastAddedTime > 4){
-			addCircle(physics);
-			lastAddedTime = gameTime.getElapsedTime().asSeconds();
-		}
+		// if(started && gameTime.getElapsedTime().asSeconds() - lastAddedTime > 4){
+			// // addCircle(physics);
+			// lastAddedTime = gameTime.getElapsedTime().asSeconds();
+		// }
 		physics.update(deltaTime);
 		physics.draw(deltaTime);
 
@@ -75,11 +75,3 @@ void startGame(Game game, Physics& physics, tgui::Button::Ptr startButton, sf::C
 	game.start();
 }
 
-void addCircle(Physics& physics){
-	float radius = 40, speed = 300;
-	arma::fvec2 bounds {500, 400};
-	arma::fvec2 smallBounds {bounds[0]-2*radius, bounds[1]-2*radius};
-		arma::fvec2 pos{static_cast<float>(arma::randu())*smallBounds[0] + radius, static_cast<float>(arma::randu())*smallBounds[1] + radius};
-		arma::fvec2 vel{static_cast<float>(arma::randu())*100 - 50, static_cast<float>(arma::randu()) * 100 - 50};
-		physics.addObject(pos,vel, radius);
-}

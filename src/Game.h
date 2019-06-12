@@ -5,7 +5,7 @@
 
 class Game{
 	public:
-		Game(sf::RenderWindow& _window);
+		Game(sf::RenderWindow& _window, Physics& physics);
 		void loop();
 		void resetGame();
 		void start();
@@ -16,7 +16,7 @@ class Game{
 		sf::RenderWindow& window;
 		sf::Clock timer;
 		float deltaTime;
-		Physics physics;
+		Physics& physics;
 		sf::Font font;
 		PhysicsCircle Player;
 		sf::Clock surviveTimer;
@@ -24,8 +24,8 @@ class Game{
 		int highScore = 0;
 		int lastSecond = 0;
 		int currentScore = 0;
-		const size_t number_start_enemies = 6;
-		unsigned int enemySpawnTime = 1;
+		const size_t number_start_enemies = 3;
+		unsigned int enemySpawnTime = 10;
 		// makes all circles go down when the player is dead
 		float fallingVelocity = 0;
 		//std::vector<PhysicsCircle> enemies;

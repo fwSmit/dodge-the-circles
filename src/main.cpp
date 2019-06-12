@@ -13,10 +13,10 @@ using namespace std;
 
 void startGame(Game game, Physics& physics, tgui::Button::Ptr startButton, sf::Clock gameTimer);
 void addCircle(Physics& physics);
+bool started = false;
 
 int main()
 {
-	bool started = false;
 	bool ended = false;
 	sf::Clock gameTime;
 	float lastAddedTime = 0;
@@ -30,7 +30,7 @@ int main()
     font.loadFromFile("../fonts/Ubuntu-M.ttf");
     arma::arma_rng::set_seed_random();
 
-	Game game(window);
+	Game game(window, physics);
 
 	auto layout = tgui::VerticalLayout::create();
 	layout->setSize("25%", "15%");
@@ -55,14 +55,11 @@ int main()
 		}
 
 		window.clear();
-		// if(started && gameTime.getElapsedTime().asSeconds() - lastAddedTime > 4){
-			// // addCircle(physics);
-			// lastAddedTime = gameTime.getElapsedTime().asSeconds();
-		// }
-		physics.update(deltaTime);
-		physics.draw(deltaTime);
-
-
+		if(started){
+			physics.update(deltaTime);
+			physics.draw(deltaTime);
+			game.loop();
+		}
 		gui.draw();
         window.display();
     }
@@ -71,7 +68,8 @@ int main()
 }
 
 void startGame(Game game, Physics& physics, tgui::Button::Ptr startButton, sf::Clock gameTimer){
+	std::cout << "starting game" << std::endl;
 	startButton->hideWithEffect(tgui::ShowAnimationType::Fade, sf::seconds(0.5));
 	game.start();
+	started = true;
 }
-

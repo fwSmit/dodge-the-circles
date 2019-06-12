@@ -1,7 +1,7 @@
 #include "Game.h"
 #include "constants.h"
 
-Game::Game(sf::RenderWindow& _window) : window(_window), func(_window), Player(func), physics(_window)
+Game::Game(sf::RenderWindow& _window, Physics& _physics) : window(_window), func(_window), Player(func), physics(_physics)
 {
     font.loadFromFile("../fonts/Ubuntu-M.ttf");
     arma::arma_rng::set_seed_random();
@@ -26,38 +26,12 @@ void Game::loop()
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
             window.close();
         }
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-            if (event.type == sf::Event::MouseMoved) {
-                if(!func.isGameOver()) {
-                    Player.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
-                    Player.clampInScreen();
-                }
-            }
-            if (event.type == sf::Event::MouseButtonReleased) {
-                if (event.mouseButton.button == sf::Mouse::Button::Left) {
-                    func.setGameOver(0);
-                    fallingVelocity = 0;
-                    resetGame();
-                    lastSecond = 0;
-                    surviveTimer.restart();
-                    //debugInit();
-                }
-                /*if (event.mouseButton.button == sf::Mouse::Button::Right) {
-                	func.setGameOver(false);
-                	//std::cout << sf::Mouse::getPosition(window).x << std::endl << sf::Mouse::getPosition(window).y << std::endl << Player.getPos() << std::endl;
-                }*/
-            }
-        }
-        //score.setString(std::to_string(surviveTime.asSeconds()));
-        window.clear(func.isGameOver()?sf::Color(100, 10, 10, 100):sf::Color());
-		physics.update(deltaTime);
-		physics.draw(deltaTime);
+		Player.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
+		Player.clampInScreen();
         window.draw(Player);
+        //score.setString(std::to_string(surviveTime.asSeconds()));
+        // window.clear(func.isGameOver()?sf::Color(100, 10, 10, 100):sf::Color());
         //window.draw(sf::Text(sf::String(std::to_string(lastSecond)), font));
-
         // using stringstream, because std::to_string doesn't compile
         std::stringstream ss;
         if(highScore < lastSecond && !func.isGameOver()) {
@@ -104,22 +78,13 @@ void Game::loop()
 
 void Game::resetGame()
 {
-	std::vector<arma::fvec2> positions;
-	float radius = 10;
-	float radius_sq = radius*radius;
-	arma::fvec2 gameSize = op::toArma(func.getWindowSize());
-    for (int i = 0; i < number_start_enemies; i++) {
-		// arma::fvec2 pos;
-		// bool intersects = true;
-		// //while(intersects){
-			// //intersects = arma::accu(arma::pow(pos-i, 2)) < radius_sq;
-		// //}
-		// // pos = arma_rng::randu<arma::fvec2>();
-		// pos = {50, 50};
-
-		// positions.push_back(pos);
+	// std::vector<arma::fvec2> positions;
+	// float radius = 10;
+	// float radius_sq = radius*radius;
+	// arma::fvec2 gameSize = op::toArma(func.getWindowSize());
+	for (int i = 0; i < number_start_enemies; i++) {
 		addCircle();
-    }
+	}
 	// for(auto& i : positions){
 		// arma::fvec2 vel{static_cast<float>(arma::randu()), static_cast<float>(arma::randu())};
 		// physics.addObject(i, 300 * vel);

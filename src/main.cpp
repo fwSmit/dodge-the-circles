@@ -58,7 +58,7 @@ int main()
 		if(started){
 			physics.update(deltaTime);
 			physics.draw(deltaTime);
-			game.loop();
+			game.loop(deltaTime);
 		}
 		gui.draw();
         window.display();

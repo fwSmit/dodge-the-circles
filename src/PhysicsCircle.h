@@ -1,5 +1,6 @@
 #include "SFML/Graphics.hpp"
 #include "functions.h"
+#include "constants.h"
 #include <functional>
 
 class PhysicsCircle : public sf::CircleShape
@@ -34,7 +35,7 @@ public:
 
     arma::fvec2 getPos()
     {
-        return arma::fvec2{ getPosition().x, getPosition().y };
+		return op::toArma(getPosition());
     }
 
     bool getHit(PhysicsCircle& other);
@@ -78,6 +79,10 @@ public:
 
 	void moveWithCurrentVel(){
 		myMove(vel);
+	}
+
+	float getRad(){
+		return op::toArma(getRadius());
 	}
 
     arma::fvec2 vel;

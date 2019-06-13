@@ -10,7 +10,7 @@ Game::Game(sf::RenderWindow& _window, Physics& _physics) : window(_window), func
     // alpha 120
 }
 
-void Game::loop()
+void Game::loop(float deltaTime)
 {
 		deltaTime = timer.restart().asSeconds();
         if (std::round(surviveTimer.getElapsedTime().asSeconds()) > lastSecond) {
@@ -26,13 +26,52 @@ void Game::loop()
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
             window.close();
         }
-		Player.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
-		Player.clampInScreen();
-        window.draw(Player);
+		if(!func.isGameOver())
+		{
+			Player.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
+			Player.clampInScreen();
+			window.draw(Player);
+		}
         //score.setString(std::to_string(surviveTime.asSeconds()));
         // window.clear(func.isGameOver()?sf::Color(100, 10, 10, 100):sf::Color());
         //window.draw(sf::Text(sf::String(std::to_string(lastSecond)), font));
         // using stringstream, because std::to_string doesn't compile
+	
+		if(!func.isGameOver())
+		{
+			for(size_t i = 0; i < physics.getNumObjects(); i++){
+				// float rad1 = Player.getRadius();
+				float rad1 = Player.getRad();
+				float rad2 = physics.getObject(i).getRadius();
+				float distance = func.distance(Player.getPos(), physics.getObject(i).getPos());
+				// std::cout << distance << std::endl;
+				if(distance < (rad1+rad2)){
+					// std::cout << "Hit" << std::endl;
+					func.setGameOver(true);
+					for(int i = physics.getNumLines() - 1; i>= 0; i--){
+						physics.removeLine(i);
+					}
+					// physics.addObject(Player.getPos(), arma::fvec2{10, 0}, Player.getRad());
+					// addCircle();
+					float radius = Player.getRad();
+					arma::fvec2 pos = Player.getPos();
+					// arma::fvec2 pos = {485, 251};
+					// float radius = 30;
+					// arma::fvec2 pos {30, 30};
+					arma::fvec2 vel{0, 0};
+					// physics.addObject(pos,vel, radius);
+					Circle object;
+					std::cout << pos << std::endl;
+					object.setPos(pos);
+					object.setVel(vel);
+					object.setRadius(radius);
+					physics.addObject(object);
+					// objects.push_back(object);
+					break;
+				}
+			}
+		}
+
         std::stringstream ss;
         if(highScore < lastSecond && !func.isGameOver()) {
             highScore = lastSecond;
@@ -46,17 +85,13 @@ void Game::loop()
             ss << "new record" << std::endl;
         }
         if(func.isGameOver()) {
-            const float fallingAcceleration = 0.2;
-            Player.setPosition(Player.getPosition().x, Player.getPosition().y + fallingVelocity);
+            // Player.setPosition(Player.getPosition().x, Player.getPosition().y + fallingVelocity);
 
-            //for(int i = 0; i < enemies.size(); i++) {
-                //auto newPosition = enemies[i].getPosition();
-                //newPosition.y += fallingVelocity;
-                //enemies[i].setPosition(newPosition);
-            //}
-
-            fallingVelocity += fallingAcceleration;
-            //ss << std::endl << "falling speed " << fallingVelocity << std::endl;
+			for(size_t i = 0; i < physics.getNumObjects(); i++){
+				arma::fvec2 force = {0, 1000 * physics.getObject(i).getMass() * fallingAcceleration};
+				physics.getObject(i).applyForce(force, deltaTime);
+			}
+            // fallingVelocity += fallingAcceleration;
 
         }
 

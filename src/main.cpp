@@ -11,15 +11,13 @@
 
 using namespace std;
 
-void startGame(Game game, Physics& physics, tgui::Button::Ptr startButton, sf::Clock gameTimer);
+void startGame(Game& game, tgui::Button::Ptr startButton);
 void addCircle(Physics& physics);
 bool started = false;
 
 int main()
 {
-	bool ended = false;
 	sf::Clock gameTime;
-	float lastAddedTime = 0;
 	sf::ContextSettings settings;
 	sf::RenderWindow window(sf::VideoMode(1000, 800), "SFML works!");
 	tgui::Gui gui(window);
@@ -39,7 +37,7 @@ int main()
 	
 	auto startButton = tgui::Button::create();
 	startButton->setText("Start");
-	startButton->connect("pressed", startGame, std::ref(game), std::ref(physics), std::ref(startButton), std::ref(gameTime));
+	startButton->connect("pressed", startGame, std::ref(game), std::ref(startButton));
 	startButton->connect("pressed", [&](){started = true;});
 	layout->add(startButton);
 
@@ -59,7 +57,7 @@ int main()
 			gui.handleEvent(event);
 		}
 
-		window.clear();
+		window.clear(sf::Color(250, 250, 250));
 		if(started){
 			physics.update(deltaTime);
 			physics.draw(deltaTime);
@@ -72,9 +70,7 @@ int main()
     return 0;
 }
 
-void startGame(Game game, Physics& physics, tgui::Button::Ptr startButton, sf::Clock gameTimer){
-	std::cout << "starting game" << std::endl;
+void startGame(Game& game, tgui::Button::Ptr startButton){
 	startButton->hideWithEffect(tgui::ShowAnimationType::Fade, sf::seconds(0.5));
 	game.start();
-	started = true;
 }

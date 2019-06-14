@@ -15,21 +15,23 @@ class Game{
 	private:
 		void addCircle();
 		sf::RenderWindow& window;
-		sf::Clock timer;
-		float deltaTime;
 		Physics& physics;
 		sf::Font font;
 		PhysicsCircle Player;
 		sf::Clock surviveTimer;
+		sf::Clock enterTimer;
 		functions func;
 		int highScore = 0;
 		int lastSecond = 0;
 		int currentScore = 0;
+		int enemySpawnTime = 3;
 		const size_t number_start_enemies = 3;
-		unsigned int enemySpawnTime = 5;
 		// makes all circles go down when the player is dead
 		const float fallingAcceleration = 0.2;
 		float fallingVelocity = 0;
-		//std::vector<PhysicsCircle> enemies;
-
+		const sf::Time invulnerablePeriod = sf::seconds(1);
+		const sf::Time  enemyInitTime = sf::seconds(1);
+		bool isPlayerVulnerable();
+		bool isEnemyAdded();
+		bool newHighScore = false;
 };

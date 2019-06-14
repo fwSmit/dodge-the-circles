@@ -12,7 +12,6 @@ Game::Game(sf::RenderWindow& _window, Physics& _physics) : window(_window), func
 
 void Game::loop(float deltaTime)
 {
-	deltaTime = timer.restart().asSeconds();
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 		window.close();
 	}
@@ -20,8 +19,6 @@ void Game::loop(float deltaTime)
 	{
 		if (std::round(surviveTimer.getElapsedTime().asSeconds()) > lastSecond) {
 			lastSecond = std::round(surviveTimer.getElapsedTime().asSeconds());
-			//system("cls");
-			//std::cout << lastSecond << std::endl;
 			if (int(std::round(surviveTimer.getElapsedTime().asSeconds())) % enemySpawnTime == 0) {
 				// spawn new enemy
 				addCircle();
@@ -30,16 +27,35 @@ void Game::loop(float deltaTime)
 
 		Player.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
 		Player.clampInScreen();
+		if(isPlayerVulnerable()){
+			Player.setFillColor(sf::Color::Green);
+		}
+		else{
+			Player.setFillColor(sf::Color(0, 150, 0));
+		}
 		window.draw(Player);
+		if(physics.getNumObjects() > number_start_enemies)
+		{
+			if(isEnemyAdded()){
+				physics.setObjectColor(physics.getNumObjects()-1, sf::Color::Blue);
+			}
+			else{
+				physics.setObjectColor(physics.getNumObjects()-1, sf::Color(0, 0, 150));
+			}
+		}
 	}
 	//score.setString(std::to_string(surviveTime.asSeconds()));
 	// window.clear(func.isGameOver()?sf::Color(100, 10, 10, 100):sf::Color());
 	//window.draw(sf::Text(sf::String(std::to_string(lastSecond)), font));
 	// using stringstream, because std::to_string doesn't compile
 
-	if(!func.isGameOver())
+	if(!func.isGameOver() && isPlayerVulnerable())
 	{
-		for(size_t i = 0; i < physics.getNumObjects(); i++){
+		size_t num_enemies = physics.getNumObjects();
+		if(!isEnemyAdded()){
+			num_enemies--;
+		}
+		for(size_t i = 0; i < num_enemies; i++){
 			// float rad1 = Player.getRadius();
 			float rad1 = Player.getRad();
 			float rad2 = physics.getObject(i).getRadius();
@@ -76,13 +92,14 @@ void Game::loop(float deltaTime)
 	std::stringstream ss;
 	if(highScore < lastSecond && !func.isGameOver()) {
 		highScore = lastSecond;
+		newHighScore = true;
 	}
 	if(!func.isGameOver()){
 		currentScore = lastSecond;
 	}
 	ss << "score: " << currentScore << std::endl << "highscore: " << highScore << std::endl;// << "fps: " << 1/timer.getElapsedTime().asSeconds();
 
-	if(currentScore == highScore){
+	if(newHighScore){
 		ss << "new record" << std::endl;
 	}
 	if(func.isGameOver()) {
@@ -99,6 +116,7 @@ void Game::loop(float deltaTime)
 	if(func.isGameOver()) {
 		std::string str = "click to restart";
 		sf::Text clickToRestart(str, font, 100);
+		clickToRestart.setFillColor(sf::Color::Black);
 		// this moves the text to the center
 		clickToRestart.setPosition(sf::Vector2f(func.getWindowSize())/2.f );
 		sf::FloatRect textRect = clickToRestart.getLocalBounds();
@@ -106,19 +124,23 @@ void Game::loop(float deltaTime)
 		//clickToRestart.move(-0.25 * str.size() * clickToRestart.getCharacterSize(), -0.5 * clickToRestart.getCharacterSize());
 		window.draw(clickToRestart);
 	}
-	timer.restart();
 	func.update();
-	window.draw(sf::Text(sf::String(ss.str()), font));
-	window.draw(sf::Text(sf::String(ss.str()), font));
+	sf::Text info(sf::String(ss.str()), font);
+	info.setFillColor(sf::Color::Black);
+	window.draw(info);
 }
 
 void Game::resetGame()
 {
 	func.setGameOver(false);
 	physics.reset();
-	for (int i = 0; i < number_start_enemies; i++) {
+	for (size_t i = 0; i < number_start_enemies; i++) {
 		addCircle();
 	}
+	surviveTimer.restart();
+	lastSecond = 0;
+	currentScore = 0;
+	newHighScore = false;
 }
 
 void Game::start(){
@@ -129,13 +151,22 @@ void Game::addCircle(){
 	float radius = 40, speed = 300;
 	arma::fvec2 bounds {500, 400};
 	arma::fvec2 smallBounds {bounds[0]-2*radius, bounds[1]-2*radius};
-		arma::fvec2 pos{static_cast<float>(arma::randu())*smallBounds[0] + radius, static_cast<float>(arma::randu())*smallBounds[1] + radius};
-		arma::fvec2 vel{static_cast<float>(arma::randu())*speed, static_cast<float>(arma::randu())*speed};
-		physics.addObject(pos,vel, radius);
+	arma::fvec2 pos{static_cast<float>(arma::randu())*smallBounds[0] + radius, static_cast<float>(arma::randu())*smallBounds[1] + radius};
+	arma::fvec2 vel{static_cast<float>(arma::randu())*speed, static_cast<float>(arma::randu())*speed};
+	physics.addObject(pos,vel, radius);
+	enterTimer.restart();
 }
 
 void Game::mouseReleased(){
 	if(func.isGameOver()){
 		resetGame();
 	}
+}
+
+bool Game::isPlayerVulnerable(){
+	return surviveTimer.getElapsedTime() > invulnerablePeriod;
+}
+
+bool Game::isEnemyAdded(){
+	return enterTimer.getElapsedTime() > enemyInitTime;
 }

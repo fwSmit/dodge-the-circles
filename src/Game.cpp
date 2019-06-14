@@ -67,7 +67,7 @@ void Game::loop(float deltaTime)
 				object.setPos(pos);
 				object.setVel(vel);
 				object.setRadius(radius);
-				physics.addObject(object);
+				physics.addObject(object, sf::Color::Green);
 				break;
 			}
 		}

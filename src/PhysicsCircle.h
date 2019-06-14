@@ -25,7 +25,7 @@ public:
 
     void setPos(arma::fvec2& position)
     {
-        setPosition(position[0], position[1]);
+        setPosition(op::toSf(position));
     }
 
     bool getOldEnough() const

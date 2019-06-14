@@ -9,6 +9,7 @@ class Game{
 		void loop(float deltaTime);
 		void resetGame();
 		void start();
+		void mouseReleased();
 	protected:
 
 	private:

@@ -51,6 +51,11 @@ int main()
 		while(window.pollEvent(event)){
 			if (event.type == sf::Event::Closed)
                 window.close();
+			if (event.type == sf::Event::MouseButtonReleased){
+				if(event.mouseButton.button == sf::Mouse::Button::Left){
+					game.mouseReleased();
+				} 
+			}
 			gui.handleEvent(event);
 		}
 

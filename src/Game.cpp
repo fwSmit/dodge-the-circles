@@ -64,12 +64,12 @@ void Game::loop(float deltaTime)
 			if(distance <= (rad1+rad2)){
 				// std::cout << "Hit" << std::endl;
 				float overlap = (rad1+rad2) - distance + 0.01;
-				std::cout << overlap << std::endl;
+				// std::cout << overlap << std::endl;
 				arma::fvec2 delta_norm = (Player.getPos() - physics.getObject(i).getPos());
 				delta_norm = arma::normalise(delta_norm);
-				std::cout << delta_norm << std::endl;
+				// std::cout << delta_norm << std::endl;
 				arma::fvec2 newPos = Player.getPos() + delta_norm * overlap;
-				std::cout << newPos << std::endl;
+				// std::cout << newPos << std::endl;
 				Player.setPos(newPos);
 				func.setGameOver(true);
 				for(int i = physics.getNumLines() - 1; i>= 0; i--){
@@ -148,11 +148,12 @@ void Game::start(){
 }
 
 void Game::addCircle(){
-	float radius = 40, speed = 300;
+	float radius = 40.f, speed = 300.f * arma::randu<float>();
 	arma::fvec2 bounds {500, 400};
 	arma::fvec2 smallBounds {bounds[0]-2*radius, bounds[1]-2*radius};
-	arma::fvec2 pos{static_cast<float>(arma::randu())*smallBounds[0] + radius, static_cast<float>(arma::randu())*smallBounds[1] + radius};
-	arma::fvec2 vel{static_cast<float>(arma::randu())*speed, static_cast<float>(arma::randu())*speed};
+	arma::fvec2 pos{arma::randu<float>()*smallBounds[0] + radius, arma::randu<float>()*smallBounds[1] + radius};
+	float direction = arma::randu<float>() * arma::fdatum::pi * 2.f;
+	arma::fvec2 vel{std::cos(direction)*speed, std::sin(direction)*speed};
 	physics.addObject(pos,vel, radius);
 	enterTimer.restart();
 }

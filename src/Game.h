@@ -15,12 +15,12 @@ class Game{
 	private:
 		void addCircle();
 		sf::RenderWindow& window;
+		functions func;
+		PhysicsCircle Player;
 		Physics& physics;
 		sf::Font font;
-		PhysicsCircle Player;
 		sf::Clock surviveTimer;
 		sf::Clock enterTimer;
-		functions func;
 		int highScore = 0;
 		int lastSecond = 0;
 		int currentScore = 0;

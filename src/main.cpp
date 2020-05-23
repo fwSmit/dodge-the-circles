@@ -23,7 +23,7 @@ int main()
 	tgui::Gui gui(window);
 	// window.setMouseCursorVisible(0);
     window.setVerticalSyncEnabled(1);
-	Physics physics(window);
+	Physics physics();
 	sf::Font font;
     font.loadFromFile("../fonts/Ubuntu-M.ttf");
     arma::arma_rng::set_seed_random();

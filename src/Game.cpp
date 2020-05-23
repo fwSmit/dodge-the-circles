@@ -58,7 +58,7 @@ void Game::loop(float deltaTime)
 		for(size_t i = 0; i < num_enemies; i++){
 			// float rad1 = Player.getRadius();
 			float rad1 = Player.getRad();
-			float rad2 = physics.getObject(i).getRadius();
+			float rad2 = physics.getObjects[i].getRadius();
 			float distance = func.distance(Player.getPos(), physics.getObject(i).getPos());
 			// std::cout << distance << std::endl;
 			if(distance <= (rad1+rad2)){
